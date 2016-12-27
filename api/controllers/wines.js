@@ -82,6 +82,30 @@ exports.performUpdateWine = function (req, res) {
 
 };
 
+exports.performDeleteWine = function (req, res) {
+    console.log('*< Started Delete Wine >*');
+    async.waterfall([
+        function (next) {
+            session.sessionManagement(req, next)
+        },
+        function (document, next) {
+            findAllWines(req, next)
+        },
+        function (document, next) {
+            deleteWine(req, document, next)
+        }
+    ], function (error, response) {
+        if (error == "Error") {
+            console.log('Deletion of Wine failed');
+            res.status(200).json({deleteWine: "DeleteWineFailure", message: response});
+        } else if (error == null && response) {
+            console.log('Deletion of Wine success');
+            res.status(200).json({deleteWine: "DeleteWineSuccess", message: "Removed"});
+        }
+        console.log('*> Finished delete Wine <*')
+    })
+};
+
 /********************************************************************************************************************
  *                      Private functions                                                                           *
  ********************************************************************************************************************/
@@ -167,10 +191,29 @@ var updateWine = function(Wine, next) {
         })
 };
 
+/**
+ * deleteWine - Delete a Wine
+ */
+var deleteWine = function (wine, document, next) {
+    console.log('** deleteWine **');
+    console.log(document);
+    var wineId = Wine.body.wineId;
+    console.log('Deleting this wine: '+wineId);
+    wineTable().remove({_id: wineId }, function (error, document) {
+        if (document) {
+            console.log('Wine deleted');
+            next(null, document);
+        } else {
+            console.log('Something went wrong');
+            next("Error", 'Something went wrong');
+        }
+    })
+};
+
 /********************************************************************************************************************
  *                      Private util functions                                                                      *
  ********************************************************************************************************************/
 
-function WineTable() {
+function wineTable() {
     return db.get().collection('wines');
 }
