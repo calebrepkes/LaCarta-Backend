@@ -116,12 +116,20 @@ exports.performDeleteWine = function (req, res) {
 var createWine = function (Wine, next) {
     console.log('** createWine **');
     var wine_Name = Wine.body.wine_Name;
+    var username = Wine.body.username;
     var description = Wine.body.description;
     var colour = Wine.body.colour;
     var brew_year = Wine.body.brew_year;
-    objectToInsert = {wine_Name: wine_Name, description: description, colour: colour, brew_year: brew_year};
-    console.log('Will add this Wine to the database: '+Wine_id);
-    WineTable().insertOne(objectToInsert, {new: true}, function (error, document) {
+    var quantity = Wine.body.quantity;
+    var objectToInsert = {
+        wine_Name: wine_Name,
+        username: username,
+        description: description,
+        colour: colour,
+        brew_year: brew_year,
+        quantity: quantity};
+    console.log('Will add this Wine to the database: '+wine_Name);
+    wineTable().insertOne(objectToInsert, {new: true}, function (error, document) {
         if (document) {
             console.log('Wine created');
             next(null, document);
