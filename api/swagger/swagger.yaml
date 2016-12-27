@@ -8,7 +8,7 @@ info:
   termsOfService: https://lacarta.com/termsOfService
   contact:
     name: Caleb Repkes
-    url: https://www.calebrepkes.com
+    url: http://www.calebrepkes.com
     # email: empty@empty.com
   license:
     name: Caleb Repkes
@@ -40,12 +40,36 @@ paths:
       description: Show the homepage of La Carta App
       responses:
         "200":
-          $ref: '#/responses/StandardSuccesResponse'
+          $ref: '#/responses/StandardSuccessResponse'
         default:
           description: Error
           schema:
             $ref: "#/definitions/Error"
-            
+
+  /app/enrollment:
+    post:
+      x-swagger-router-controller: session
+      operationId: performEnrollment
+      summary: Enrollment
+      description: Enroll to La Carta App by providing a username and a password.
+      parameters:
+        - name: RequestEnrollment
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestLogin'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccessResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /app/login:
     post:
       x-swagger-router-controller: session
@@ -60,9 +84,7 @@ paths:
             $ref: '#/definitions/RequestLogin'
       responses:
         "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/LoginResponse"
+          $ref: "#/responses/StandardSuccessResponse"
         "404":
           $ref: "#/responses/StandardNotFoundResponse"
         "500":
@@ -71,22 +93,22 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/Error"
-            
-  /app/payment:
+
+  /app/wine:
     post:
-      x-swagger-router-controller: payment
-      operationId: performMakePayment
-      summary: Make a Payment
-      description: Make a payment.
+      x-swagger-router-controller: wines
+      operationId: performCreateWine
+      summary: Create Wine
+      description: Add a new wine to La Carta
       parameters:
-        - name: RequestMakePayment
+        - name: RequestCreateWine
           in: body
           description: Contains the defaults of the request message
           schema:
-            $ref: '#/definitions/RequestMakePayment'
+            $ref: '#/definitions/RequestCreateWine'
       responses:
         "200":
-          $ref: "#/responses/StandardSuccesResponse"
+          $ref: "#/responses/StandardSuccessResponse"
         "404":
           $ref: "#/responses/StandardNotFoundResponse"
         "500":
@@ -95,7 +117,103 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/Error"
-            
+
+  /app/findWines:
+    post:
+      x-swagger-router-controller: wines
+      operationId: performFindWines
+      summary: Create Wine
+      description: Find all wines in La Carta
+      parameters:
+        - name: RequestCreateWine
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestFindWines'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccessResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /app/updateWine:
+    post:
+      x-swagger-router-controller: wines
+      operationId: performUpdateWine
+      summary: Update Wine
+      description: Update a wine to La Carta
+      parameters:
+        - name: RequestUpdateWine
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestUpdateWine'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccessResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /app/deleteWine:
+    delete:
+      x-swagger-router-controller: wines
+      operationId: performDeleteWine
+      summary: Delete Wine
+      description: Delete a Wine by supplying wine_Name, username and token.
+      parameters:
+        - name: RequestDeleteTask
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestDeleteWine'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccessResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /app/deleteUser:
+    delete:
+      x-swagger-router-controller: session
+      operationId: performDeleteUser
+      summary: Delete User
+      description: Delete a user by supplying username.
+      parameters:
+        - name: RequestDeleteUser
+          in: body
+          description: Contains the defaults of the request message
+          schema:
+            $ref: '#/definitions/RequestDeleteUser'
+      responses:
+        "200":
+          $ref: "#/responses/StandardSuccessResponse"
+        "404":
+          $ref: "#/responses/StandardNotFoundResponse"
+        "500":
+          $ref: "#/responses/Standard500ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+
   /app/logout:
     post:
       x-swagger-router-controller: session
@@ -110,7 +228,7 @@ paths:
             $ref: '#/definitions/RequestLogout'
       responses:
         "200":
-          $ref: "#/responses/StandardSuccesResponse"
+          $ref: "#/responses/StandardSuccessResponse"
         "404":
           $ref: "#/responses/StandardNotFoundResponse"
         "500":
@@ -125,15 +243,15 @@ paths:
 # complex objects have schema definitions
 definitions:
   Error:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        fields:
-          type: string
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
   StandardSuccess:
     type: object
     properties: 
@@ -141,38 +259,104 @@ definitions:
         type: string
       message:
         type: string
-  RequestLogin:
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: Username of user
-          example: test@test.com
-        password:
-          type: string
-          description: Password of user
-          example: test
-  RequestMakePayment:
-    description: blabla
+  RequestBasic:
     type: object
     required:
-    - payment_id
-    - own_account
-    - beneficiary
-    - amount
+    - username
     - token
     properties:
-      payment_id:
+      username:
         type: string
-      own_account:
+      token:
+        type: integer
+        format: int32
+  RequestLogin:
+    required:
+    - username
+    - password
+    properties:
+      username:
         type: string
-      beneficiary:
+        description: Username of user
+        example: test@test.com
+      password:
         type: string
-      amount:
+        description: Password of user
+        example: test
+  RequestCreateWine:
+    description: Create a Wine
+    type: object
+    required:
+    - wine_Name
+    - username
+    - description
+    - colour
+    - brew_year
+    - quantity
+    - token
+    properties:
+      wine_Name:
+        type: string
+      username:
+        type: string
+      description:
+        type: string
+      colour:
+        type: string
+      brew_year:
         type: number
-        format: float
+        format: date
+      quantity:
+        type: number
+        format: int32
+      token:
+        type: integer
+        format: int32
+  RequestUpdateWine:
+    description: Update a Wine
+    type: object
+    required:
+    - wineId
+    - wine_Name
+    - username
+    - description
+    - colour
+    - brew_year
+    - quantity
+    - token
+    properties:
+      wineId:
+        type: string
+      wine_Name:
+        type: string
+      username:
+        type: string
+      description:
+        type: string
+      colour:
+        type: string
+      brew_year:
+        type: number
+        format: date
+      quantity:
+        type: number
+        format: int32
+      token:
+        type: integer
+        format: int32
+  RequestFindWines:
+    $ref: "#/definitions/RequestBasic"
+  RequestDeleteWine:
+    type: object
+    required:
+    - username
+    - wine_Name
+    - token
+    properties:
+      username:
+        type: string
+      wine_Name:
+        type: string
       token:
         type: integer
         format: int32
@@ -183,11 +367,18 @@ definitions:
     properties:
       token:
         type: string
-  LoginResponse:
-      type: object
-      properties:
-        token:
-          type: string
+  RequestDeleteUser:
+    type: object
+    required:
+    - username
+    properties:
+      username:
+        type: string
+#  LoginResponse:
+#    type: object
+#    properties:
+#      token:
+#        type: string
 # complex routes have response definitions which can be re-used
 responses:
   Standard500ErrorResponse:
@@ -198,7 +389,7 @@ responses:
     description: Record not found error
     schema:
       $ref: "#/definitions/Error"
-  StandardSuccesResponse:
+  StandardSuccessResponse:
     description: A successfull response
     schema:
       $ref: "#/definitions/StandardSuccess"
