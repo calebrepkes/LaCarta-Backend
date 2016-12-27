@@ -137,9 +137,9 @@ var createWine = function (Wine, next) {
  */
 var findAllWines = function (User, next) {
     console.log('** findWine **');
-    var user = family.body.username;
+    var user = User.body.username;
     console.log('Finding Wines for User: '+user);
-    taskTable().find({username: user}).toArray(function (error, document) {
+    wineTable().find({username: user}).toArray(function (error, document) {
         if (document.length == 0) {
             console.log('No Wines found, document: '+document);
             next("Error", 'No Wines found.')
