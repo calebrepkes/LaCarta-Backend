@@ -1,0 +1,472 @@
+{
+	"variables": [],
+	"info": {
+		"name": "LaCartaBackend",
+		"_postman_id": "7787633a-164c-36a6-6711-080e4de40556",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01_Homepage",
+			"description": "",
+			"item": [
+				{
+					"name": "HomePageHeroku",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"        tests['Homepage displayed'] = responseCode.code === 200;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "02_Users",
+			"description": "",
+			"item": [
+				{
+					"name": "createUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.enrollmentStatus === 'EnrollmentSuccessfull') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are successfully enrolled'] = data.enrollmentStatus === 'EnrollmentSuccessfull';",
+									"        tests['Use this token for further sessions: '+data.token] = data.token;",
+									"        postman.setGlobalVariable('userToken', data.token);",
+									"        postman.setGlobalVariable('usernameUsed', postman.getEnvironmentVariable('username'));",
+									"    } else if (data.enrollmentStatus === 'EnrollmentFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are not enrolled in'] = data.authenticateStatus === 'EnrollmentSuccessfull';",
+									"    }",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var username = postman.getEnvironmentVariable('username');",
+									"postman.setGlobalVariable('cu_username', username);",
+									"var password = postman.getEnvironmentVariable('password');",
+									"postman.setGlobalVariable('cu_password', password);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/enrollment",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\":\"{{cu_username}}\",\n\t\"password\":\"{{cu_password}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "loginUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.authenticateStatus === 'AuthenticationSuccessfull') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are successfully logged in'] = data.authenticateStatus === 'AuthenticationSuccessfull';",
+									"        tests['Use this token for further sessions: '+data.token] = data.token;",
+									"        postman.setGlobalVariable('userToken', data.token);",
+									"        postman.setGlobalVariable('usernameUsed', postman.getEnvironmentVariable('username'));",
+									"    } else if (data.authenticateStatus === 'AuthenticationFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are not logged in'] = data.authenticateStatus === 'AuthenticationSuccessfull';",
+									"    }",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var username = postman.getEnvironmentVariable('username');",
+									"postman.setGlobalVariable('lu_username', username);",
+									"var password = postman.getEnvironmentVariable('password');",
+									"postman.setGlobalVariable('lu_password', password);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/login",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\":\"{{cu_username}}\",\n\t\"password\":\"{{cu_password}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "03_Wine",
+			"description": "",
+			"item": [
+				{
+					"name": "createWine",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.createWine === 'CreateWineSuccess') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You have created a wine'] = data.createWine === 'CreateWineSuccess';",
+									"        var number = parseInt(postman.getEnvironmentVariable('count'));",
+									"        postman.setEnvironmentVariable('count', number+1);",
+									"        postman.setGlobalVariable('wineId', data.message._id)",
+									"    } else if (data.createWine === 'CreateWineFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are not logged in'] = data.createWine === 'CreateWineFailure';",
+									"    }",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var wine_Name = postman.getEnvironmentVariable('wine_Name')+parseInt(postman.getEnvironmentVariable('count'));",
+									"postman.setGlobalVariable('cW_wine_Name', wine_Name);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/wine",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"wine_Name\":\"{{cW_wine_Name}}\",\n\"username\":\"{{username}}\",\n\"description\":\"{{description}}\",\n\"colour\":\"{{colour}}\",\n\"brew_year\": {{brew_year}},\n\"quantity\": {{quantity}},\n\"token\":{{userToken}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "findWines",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.findWines === 'FindWinesSuccess') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['Found your Wines'] = data.findWines === 'FindWinesSuccess';",
+									"        var wineListLength = Object.keys(data.message).length;",
+									"        tests['Found this many wines: '+wineListLength] = wineListLength > 0;",
+									"        var wineId = data.message[0]._id;",
+									"        postman.setGlobalVariable('wineId', wineId);",
+									"        tests['Storing the ID of first wine found: '+wineId] = wineId;",
+									"    } else if (data.findWines === 'FindWinesFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are not logged in'] = data.findWines === 'FindWinesFailure';",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/findWines",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"username\":\"{{username}}\",\n\"token\":{{userToken}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "updateWine",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200) { ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.updateWinesStatus === 'UpdateWinesFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['Update Wines failed'] = data.message === 'Wine could not be updated';",
+									"    } else if (data.updateWinesStatus === 'UpdateWinesSuccess') {",
+									"        if (data.message === 'Nothing updated') {",
+									"            tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"            tests['Failed to Update Wines'] = data.message === 'Nothing updated';",
+									"            // var wineListLength = Object.keys(data.message).length;",
+									"            // tests[' this many wines: '+wineListLength] = wineListLength > 0;",
+									"            // var wineId = data.message[0]._id;",
+									"            // tests['Storing the ID of first wine found: '+wineId] = wineId;",
+									"        } else if (data.message === 'Successful') {",
+									"            tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"            tests['updated your Wines'] = data.message === 'Successful';",
+									"        }",
+									"    }    ",
+									"}",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var wine_Name = postman.getEnvironmentVariable('wine_Name')+parseInt(postman.getEnvironmentVariable('count'));",
+									"postman.setGlobalVariable('uW_wine_Name', wine_Name);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/updateWine",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"wineId\":\"{{wineId}}\",\n\"wine_Name\":\"{{uW_wine_Name}}\",\n\"username\":\"{{username}}\",\n\"description\":\"{{description}}\",\n\"colour\":\"{{colour}}\",\n\"brew_year\": {{brew_year}},\n\"quantity\": {{quantity}},\n\"token\":{{userToken}}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "08_Delete",
+			"description": "",
+			"item": [
+				{
+					"name": "deleteWine",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.deleteKid === 'DeleteKidSuccess') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You have deleted a kid'] = data.message === 'Removed';",
+									"        //tests['Use this token for further KID sessions: '+data.message.token] = data.message.token;",
+									"        // postman.setGlobalVariable('userToken', data.token);",
+									"        // var number = parseInt(postman.getEnvironmentVariable('count'));",
+									"        // postman.setEnvironmentVariable('count', number+1);",
+									"    } else if (data.deleteKid === 'CreateKidFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are not logged in'] = data.deleteKid === 'DeleteKidFailure';",
+									"    }",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// var kidname = postman.getEnvironmentVariable('kidname')+parseInt(postman.getEnvironmentVariable('count'));",
+									"// postman.setGlobalVariable('kidUsername', kidname);",
+									"var parentname = postman.getGlobalVariable('usernameUsed');",
+									"postman.setGlobalVariable('parent_username', parentname);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/deleteWine",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"kid_username\":\"{{kidUsername}}\",\n\"parent_username\":\"{{parent_username}}\",\n\"token\":\"{{userToken}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (responseCode.code === 200){ ",
+									"    var data = JSON.parse(responseBody);",
+									"    if (data.deleteUser === 'DeleteUserSuccess') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You have deleted a user'] = data.message === 'Removed';",
+									"        //tests['Use this token for further KID sessions: '+data.message.token] = data.message.token;",
+									"        // postman.setGlobalVariable('userToken', data.token);",
+									"        // var number = parseInt(postman.getEnvironmentVariable('count'));",
+									"        // postman.setEnvironmentVariable('count', number+1);",
+									"    } else if (data.deleteUser === 'DeleteUserFailure') {",
+									"        tests['Call performed successfully.'] = responseCode.code === 200;        ",
+									"        tests['You are not logged in'] = data.deleteUser === 'DeleteUserFailure';",
+									"    }",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var username = postman.getEnvironmentVariable('cu_username');",
+									"postman.setGlobalVariable('du_username', username);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/deleteUser",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"username\":\"{{deleteThisUsername}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "09_Logout",
+			"description": "",
+			"item": [
+				{
+					"name": "Logout",
+					"request": {
+						"url": "{{url{{switch_url}}}}/app/logout",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"token\":\"{{userToken}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
