@@ -60,6 +60,27 @@ exports.performFindWines = function (req, res) {
 
 };
 
+exports.performUpdateWine = function (req, res) {
+    console.log('*< Started Update of Wines >*');
+    async.waterfall([
+        function (next) {
+            session.sessionManagement(req, next)
+        },
+        function (document, next) {
+            updateWine(req, next)
+        }
+    ], function (error, response) {
+        if (error == "Error") {
+            console.log('Update Wines failed');
+            res.status(200).json({updateWinesStatus: "UpdateWinesFailure", message: response});
+        } else if (error == null && response) {
+            console.log('Update Wines call successful');
+            res.status(200).json({updateWinesStatus: "UpdateWinesSuccess", message: response});
+        }
+        console.log('*> Finished update Wines <*')
+    })
+
+};
 
 /********************************************************************************************************************
  *                      Private functions                                                                           *
@@ -106,6 +127,44 @@ var findAllWines = function (User, next) {
             next("Error", 'Something went wrong');
         }
     })
+};
+/**
+ * updateQuantity - Update how many wines you have
+ */
+var updateWine = function(Wine, next) {
+    console.log('** Update Wine **');
+    var uWwine_Id = Wine.body.wineId;
+    var uWwineName = Wine.body.wine_Name;
+    var uWusername = Wine.body.username;
+    var uWdescription = Wine.body.description;
+    var uWcolour = Wine.body.colour;
+    var uWbrew_year = Wine.body.brew_year;
+    var uWquantity = Wine.body.quantity;
+    console.log('Updating this Wine: '+uWwine_Id+' With wine name: '+uWwineName);
+    wineTable().updateOne(
+        { '_id' : ObjectID(uWwine_Id) },
+        { $set: {
+            wine_Name: uWwineName,
+            username: uWusername,
+            description: uWdescription,
+            colour: uWcolour,
+            brew_year: uWbrew_year,
+            quantity: uWquantity
+        } }, function (error, document) {
+            //console.log(document);
+            console.log('ModifiedCount: '+document.modifiedCount);
+            console.log('MatchedCount: '+document.matchedCount);
+            if (document.modifiedCount == 0) {
+                console.log('Nothing updated')
+                next(null, "Nothing updated");
+            } else if (document) {
+                console.log('Wine updated');
+                next(null, "Successful");
+            } else {
+                console.log('Wine could not be updated');
+                next("Error", null);
+            }
+        })
 };
 
 /********************************************************************************************************************
