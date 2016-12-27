@@ -26,9 +26,11 @@ exports.performCreateWine = function (req, res) {
             var objectToResponse = {
                 id: body._id,
                 wine_Name: body.wine_Name,
+                username: body.username,
                 description: body.description,
                 colour: body.colour,
-                brew_year: body.brew_year
+                brew_year: body.brew_year,
+                quantity: body.quantity
             };
             res.status(200).json({createWine: "CreateWineSuccess", message: objectToResponse});
         }
