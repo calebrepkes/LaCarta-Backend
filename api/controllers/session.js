@@ -100,7 +100,7 @@ var validateEmail = function(auth, next) {
     console.log('** validateEmail **');
     var usrN = auth.body.username;
     console.log("Incomming auth.email in validateCredentials: " + usrN);
-    parentsTable().findOne({username: usrN},function(error, document) {
+    usersTable().findOne({username: usrN},function(error, document) {
         if (document == null) {
             console.log('Not an existing user yet.');
             next(null, null);
@@ -233,7 +233,7 @@ function tokenTable() {
     return db.get().collection('tokens');
 }
 function randomToken() {
-    return "1"+Math.floor((Math.random() * 9999999) + 1000000);
+    return 1+Math.floor((Math.random() * 9999999) + 1000000);
 }
 function currentTimestamp() {
     var newCurrentTimestamp = moment().format();
