@@ -4,4 +4,3 @@ This is the source code for La Carta backend. Which is a NodeJS project with Exp
 
 Find the documentation of this source on: https://lacarta-backend.herokuapp.com/docs/
 
-Explain this to Deniz
