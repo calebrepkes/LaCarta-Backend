@@ -122,7 +122,7 @@ paths:
     post:
       x-swagger-router-controller: wines
       operationId: performFindWines
-      summary: Create Wine
+      summary: Find all Wines
       description: Find all wines in La Carta
       parameters:
         - name: RequestCreateWine
@@ -304,11 +304,9 @@ definitions:
       colour:
         type: string
       brew_year:
-        type: number
-        format: date
+        type: string
       quantity:
-        type: number
-        format: int32
+        type: string
       token:
         type: integer
         format: int32
@@ -336,11 +334,9 @@ definitions:
       colour:
         type: string
       brew_year:
-        type: number
-        format: date
+        type: string
       quantity:
-        type: number
-        format: int32
+        type: string
       token:
         type: integer
         format: int32
