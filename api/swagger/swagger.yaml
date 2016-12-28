@@ -13,7 +13,8 @@ info:
   license:
     name: Caleb Repkes
 # during dev, should point to your local machine
-host: localhost:5001
+#host: localhost:5001
+host: https://lacarta-backend.herokuapp.com
 # basePath prefixes all resource paths 
 basePath: /
 # 
